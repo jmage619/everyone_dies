@@ -4,29 +4,43 @@ extern "C" {
 	#include "lauxlib.h"
 }
 
+#include <memory>
 #include <iostream>
-using namespace std;
+using std::cout;
+using std::endl;
+
+#include <vector>
+#include <string>
 
 class Sprite {
 public:
+    std::string name;
     int health;
 };
 
-Sprite* sprite = nullptr;
-
-lua_State* L;
+std::vector<std::unique_ptr<Sprite>> sprites;
 
 int create_sprite(lua_State* L) {
-    sprite = new Sprite;
+    Sprite* sprite = new Sprite;
 
-    sprite->health = lua_tointeger(L, 1);
+    lua_pushstring(L, "name");
+    lua_gettable(L, -2);
+    sprite->name = lua_tostring(L, -1);
+    lua_pop(L, 1);
+
+    lua_pushstring(L, "health");
+    lua_gettable(L, -2);
+    sprite->health = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+
     lua_pushlightuserdata(L, sprite);
+    sprites.push_back(std::unique_ptr<Sprite>(sprite));
 
     return 1;
 }
 
 int main() {
-    L = luaL_newstate();
+    lua_State* L = luaL_newstate();
     luaL_openlibs(L);
 
     lua_register(L, "create_sprite", create_sprite);
@@ -38,9 +52,8 @@ int main() {
 
     lua_close(L);
 
-    if (sprite != nullptr) {
-        cout << "sprite health: " << sprite->health << endl;
-        delete sprite;
+    for (auto& sprite: sprites) {
+        cout << "sprite name: " << sprite->name << "; health: " << sprite->health << endl;
     }
 
     return 0;
