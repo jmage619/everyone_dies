@@ -39,11 +39,29 @@ int create_sprite(lua_State* L) {
     return 1;
 }
 
+int sprite_get_name(lua_State* L) {
+    const Sprite* sprite = static_cast<const Sprite*>(lua_touserdata(L, 1));
+
+    lua_pushstring(L, sprite->name.c_str());
+
+    return 1;
+}
+
+int sprite_get_health(lua_State* L) {
+    const Sprite* sprite = static_cast<const Sprite*>(lua_touserdata(L, 1));
+
+    lua_pushnumber(L, sprite->health);
+
+    return 1;
+}
+
 int main() {
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
 
     lua_register(L, "create_sprite", create_sprite);
+    lua_register(L, "sprite_get_name", sprite_get_name);
+    lua_register(L, "sprite_get_health", sprite_get_health);
 
     luaL_dofile(L, "script.lua");
 
