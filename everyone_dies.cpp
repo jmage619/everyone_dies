@@ -20,7 +20,7 @@ public:
 
 std::vector<std::unique_ptr<Sprite>> sprites;
 
-int create_sprite(lua_State* L) {
+int sprite_new(lua_State* L) {
     Sprite* sprite = new Sprite;
 
     lua_pushstring(L, "name");
@@ -55,13 +55,22 @@ int sprite_get_health(lua_State* L) {
     return 1;
 }
 
+const luaL_Reg sprite_lib[] = {
+    {"new", sprite_new},
+    {"get_name", sprite_get_name},
+    {"get_health", sprite_get_health},
+    {NULL, NULL}
+};
+
 int main() {
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
 
-    lua_register(L, "create_sprite", create_sprite);
-    lua_register(L, "sprite_get_name", sprite_get_name);
-    lua_register(L, "sprite_get_health", sprite_get_health);
+    // didnt work in Lua 5.3
+    //luaL_openlib(L, "Sprite", sprite_lib, 0);
+    lua_newtable(L);
+    luaL_setfuncs(L, sprite_lib, 0);
+    lua_setglobal(L, "Sprite");
 
     luaL_dofile(L, "script.lua");
 
