@@ -101,6 +101,7 @@ int main() {
             lua_getglobal(L, "sprites");
             lua_pushnumber(L, index);
             lua_call(L, 2, 0);
+            lua_pop(L, 1); // pop table object
         }
 
         lua_pop(L, 1); // pop sprites array
