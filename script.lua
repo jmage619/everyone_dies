@@ -9,11 +9,10 @@ end
 
 function handle_damage(index)
     if Sprite.get_health(sprites[index]) == 0 then
-        print(Sprite.get_name(sprites[index]).." has died!")
-        table.remove(sprites, index)
+        print(Sprite.get_name(sprites[index]) .. " has died!")
     elseif Sprite.get_health(sprites[index]) == 1 then
-        print(Sprite.get_name(sprites[index]).." is not looking so good..")
+        print(Sprite.get_name(sprites[index]) .. " is not looking so good..")
     else
-        print(Sprite.get_name(sprites[index]).." was damaged!")
+        print(Sprite.get_name(sprites[index]) .. " was damaged!")
     end
 end

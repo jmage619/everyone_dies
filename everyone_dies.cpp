@@ -94,10 +94,15 @@ int main() {
         lua_pushnumber(L, index);
         lua_call(L, 1, 0);
 
-        /*if (health == 0) {
-            sprites.erase(sprites.begin() + index);
+        if (health == 0) {
+            lua_getglobal(L, "table");
+            lua_pushstring(L, "remove");
+            lua_gettable(L, -2);
+            lua_getglobal(L, "sprites");
+            lua_pushnumber(L, index);
+            lua_call(L, 2, 0);
         }
-        */
+
         lua_pop(L, 1); // pop sprites array
     }
 
