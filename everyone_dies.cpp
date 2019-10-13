@@ -4,6 +4,8 @@ extern "C" {
 	#include "lauxlib.h"
 }
 
+#include <cstdlib>
+#include <ctime>
 #include <memory>
 #include <iostream>
 using std::cout;
@@ -63,6 +65,7 @@ const luaL_Reg sprite_lib[] = {
 };
 
 int main() {
+    srand(time(nullptr));
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
 
@@ -74,14 +77,22 @@ int main() {
 
     luaL_dofile(L, "script.lua");
 
-    lua_getglobal(L, "do_something");
+    lua_getglobal(L, "init");
     lua_call(L, 0, 0);
 
-    lua_close(L);
+    while (sprites.size() > 0) {
+        int index = rand() % sprites.size();
+        --sprites[index]->health;
 
-    for (auto& sprite: sprites) {
-        cout << "sprite name: " << sprite->name << "; health: " << sprite->health << endl;
+        lua_getglobal(L, "handle_damage");
+        lua_pushlightuserdata(L, sprites[index].get());
+        lua_call(L, 1, 0);
+
+        if (sprites[index]->health == 0) {
+            sprites.erase(sprites.begin() + index);
+        }
     }
 
+    lua_close(L);
     return 0;
 }
